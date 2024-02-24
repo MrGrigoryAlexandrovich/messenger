@@ -18,7 +18,7 @@ export class User {
   email: string;
 
   @Prop({ default: false })
-  isAdmin: boolean = false;
+  isAdmin: boolean;
 
   @Prop({ default: null, nullable: true })
   avatar: string | null;
