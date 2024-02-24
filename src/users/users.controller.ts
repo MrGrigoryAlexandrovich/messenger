@@ -1,21 +1,17 @@
+import * as bcrypt from 'bcrypt';
 import {
   Controller,
   Post,
   Body,
-  UsePipes,
-  ValidationPipe,
   Get,
   Param,
   HttpException,
   Patch,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user';
-import { AuthUserDto } from './dto/auth';
 
 @Controller('users')
 export class UsersController {
@@ -30,17 +26,6 @@ export class UsersController {
       password: hashedPassword,
     };
     return this.usersService.createUser(formattedUser);
-  }
-
-  @Post('login')
-  async login(@Body() authUserDto: AuthUserDto) {
-    const user = await this.usersService.login(authUserDto);
-    if (!user) {
-      throw new HttpException('Invalid credentials', 401);
-    }
-    return {
-      token: user,
-    };
   }
 
   @Get()
