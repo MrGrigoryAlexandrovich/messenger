@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { User, UserSchema } from './schemas/userSchema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UsersController } from './users.controller';
       },
     ]),
   ],
-  providers: [UsersService],
+  providers: [PassportModule, UsersService],
   controllers: [UsersController],
 })
 export class UsersModule {}

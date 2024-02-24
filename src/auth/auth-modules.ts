@@ -5,9 +5,13 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User, UserSchema } from 'src/users/schemas/userSchema';
+import { UsersService } from 'src/users/users.service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt-strategy';
 
 @Module({
   imports: [
+    PassportModule,
     ConfigModule.forRoot(),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -19,7 +23,18 @@ import { User, UserSchema } from 'src/users/schemas/userSchema';
       },
     ]),
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    {
+      provide: 'AUTH_SERVICE',
+      useClass: AuthService,
+    },
+    {
+      provide: 'USER_SERVICE',
+      useClass: UsersService,
+    },
+    JwtStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModules {}

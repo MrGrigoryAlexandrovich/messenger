@@ -1,16 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User } from './schemas/userSchema';
 import { CreateUserDto } from './dto/create-user';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private jwtService: JwtService,
-    @InjectModel(User.name) private userModel: Model<User>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+
   async createUser(createUserDto: CreateUserDto) {
     const newUser = new this.userModel(createUserDto);
     return newUser.save();

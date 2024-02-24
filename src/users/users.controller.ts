@@ -8,10 +8,12 @@ import {
   HttpException,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -28,11 +30,13 @@ export class UsersController {
     return this.usersService.createUser(formattedUser);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   getUsers() {
     return this.usersService.getUsers();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async getUserById(@Param('id') id: string) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
@@ -42,6 +46,7 @@ export class UsersController {
     return findUser;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   async updateUser(
     @Param('id') id: string,
@@ -54,6 +59,7 @@ export class UsersController {
     return updatedUser;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
