@@ -48,15 +48,19 @@ export class MessagesController {
     @Body() updateMessageDto: UpdateMessageDto,
     @Request() req: any,
   ) {
+    const formattedUpdatedMessage = {
+      ...updateMessageDto,
+      updatedAt: new Date(),
+    };
     const updatedMessage = await this.messagesService.updateMessage(
       id,
-      updateMessageDto,
+      formattedUpdatedMessage,
     );
 
     if (!updatedMessage) {
       throw new HttpException('Message Not Found', 404);
     }
-    return updatedMessage;
+    return formattedUpdatedMessage;
   }
 
   @Delete(':id')

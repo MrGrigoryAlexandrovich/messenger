@@ -8,5 +8,5 @@ export class CreateUserDto {
   readonly isAdmin: boolean;
   readonly avatar?: string | null;
   readonly createdAt: Date;
-  readonly updatedAt?: string | null;
+  readonly updatedAt?: Date | null;
 }

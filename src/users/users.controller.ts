@@ -74,8 +74,14 @@ export class UsersController {
         403,
       );
     }
-
-    const updatedUser = await this.usersService.updateUser(id, updateUserDto);
+    const formatedUpdatedUser = {
+      ...updateUserDto,
+      updatedAt: new Date(),
+    };
+    const updatedUser = await this.usersService.updateUser(
+      id,
+      formatedUpdatedUser,
+    );
 
     if (!updatedUser) {
       throw new HttpException('User Not Found', 404);
