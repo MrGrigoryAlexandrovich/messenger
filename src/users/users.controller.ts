@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 import {
   Controller,
   Post,
@@ -11,9 +12,8 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import mongoose from 'mongoose';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user';
+import { CreateUserDto } from './dto/create.user';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAdminAuthGuard } from '../auth/strategies/admin-strategy';
 
@@ -25,10 +25,12 @@ export class UsersController {
   async createUser(@Body() createUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
     const formattedUser = {
       ...createUserDto,
       password: hashedPassword,
     };
+
     return this.usersService.createUser(formattedUser);
   }
 
@@ -41,16 +43,17 @@ export class UsersController {
   @UseGuards(new JwtAdminAuthGuard())
   @Get(':id')
   async getUserById(@Param('id') id: string, @Request() req: any) {
-    const isValid = mongoose.Types.ObjectId.isValid(id);
-    if (!isValid) throw new HttpException('User not found', 404);
     const findUser = await this.usersService.getUserById(id);
+
     if (!findUser) throw new HttpException('User not found', 404);
+
     if (!req.user || !req.user.isAdmin) {
       throw new HttpException(
         'Unauthorized access: Admin privileges required',
         403,
       );
     }
+
     return findUser;
   }
 
@@ -62,15 +65,21 @@ export class UsersController {
     @Request() req: any,
   ) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
+
     if (!isValid) throw new HttpException('Invalid ID', 400);
+
     if (!req.user || !req.user.isAdmin) {
       throw new HttpException(
         'Unauthorized access: Admin privileges required',
         403,
       );
     }
+
     const updatedUser = await this.usersService.updateUser(id, updateUserDto);
-    if (!updatedUser) throw new HttpException('User Not Found', 404);
+
+    if (!updatedUser) {
+      throw new HttpException('User Not Found', 404);
+    }
     return updatedUser;
   }
 
@@ -81,9 +90,11 @@ export class UsersController {
     @Request() req: any,
   ): Promise<void> {
     const isValid = mongoose.Types.ObjectId.isValid(id);
+
     if (!isValid) {
       throw new HttpException('Invalid ID', 400);
     }
+
     if (!req.user || !req.user.isAdmin) {
       throw new HttpException(
         'Unauthorized access: Admin privileges required',

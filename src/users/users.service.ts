@@ -1,9 +1,8 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/userSchema';
-import { CreateUserDto } from './dto/create-user';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDto } from './dto/create.user';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +20,7 @@ export class UsersService {
   }
 
   updateUser(id: string, updateUserDto: CreateUserDto) {
-    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+    return this.userModel.findByIdAndUpdate(id, updateUserDto);
   }
 
   deleteUser(id: string) {
