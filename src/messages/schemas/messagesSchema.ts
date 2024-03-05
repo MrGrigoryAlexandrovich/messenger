@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 @Schema()
-export class Message {
+export class Message extends Document {
   @Prop({ required: true })
   senderId: string;
 

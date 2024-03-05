@@ -42,6 +42,7 @@ export class MessagesController {
     return findMessages;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   async updateMessage(
     @Param('id') id: string,
@@ -52,23 +53,38 @@ export class MessagesController {
       ...updateMessageDto,
       updatedAt: new Date(),
     };
-    const updatedMessage = await this.messagesService.updateMessage(
-      id,
-      formattedUpdatedMessage,
-    );
+
+    const updatedMessage = await this.messagesService.getMessage(id);
 
     if (!updatedMessage) {
       throw new HttpException('Message Not Found', 404);
     }
+
+    if (updatedMessage.senderId !== req.user._id) {
+      console.log(req.user._id, updatedMessage.senderId);
+      throw new HttpException('Not allowed', 403);
+    }
+
+    await this.messagesService.updateMessage(id, formattedUpdatedMessage);
     return formattedUpdatedMessage;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  async deleteUser(
+  async deleteMessage(
     @Param('id') id: string,
     @Request() req: any,
   ): Promise<void> {
-    const deletedMessage = await this.messagesService.deleteMessagee(id);
-    if (!deletedMessage) throw new HttpException('Message Not Found', 404);
+    const deletedMessage = await this.messagesService.getMessage(id);
+
+    if (!deletedMessage) {
+      throw new HttpException('Message Not Found', 404);
+    }
+
+    if (deletedMessage.senderId !== req.user._id) {
+      throw new HttpException('Not allowed', 403);
+    }
+
+    await this.messagesService.deleteMessage(id);
   }
 }

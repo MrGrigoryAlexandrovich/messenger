@@ -11,9 +11,13 @@ export class MessagesService {
     @InjectModel(Message.name) private messageModel: Model<Message>,
   ) {}
 
-  async createMessage(createMessageDto: CreateMessageDto) {
+  createMessage(createMessageDto: CreateMessageDto) {
     const newMessage = new this.messageModel(createMessageDto);
     return newMessage.save();
+  }
+
+  getMessage(id: string) {
+    return this.messageModel.findById(id);
   }
 
   async getConversation(senderId: string, receiverId: string) {
@@ -33,7 +37,7 @@ export class MessagesService {
     return this.messageModel.findByIdAndUpdate(id, updateUserDto);
   }
 
-  deleteMessagee(id: string) {
+  deleteMessage(id: string) {
     return this.messageModel.findByIdAndDelete(id);
   }
 }
